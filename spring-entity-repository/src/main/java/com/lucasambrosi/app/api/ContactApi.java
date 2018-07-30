@@ -18,11 +18,11 @@ public class ContactApi {
 
     @GetMapping("/contacts/{id}")
     @ResponseBody
-    public String searchById(@PathVariable(value = "id") Integer id){
+    public String searchById(@PathVariable(value = "id") Integer id) {
         try {
             Optional<ContactEntity> contact = contactRepository.findById(id);
-            if(contact.isPresent()) return contact.get().toString();
-        } catch (Exception ex){
+            if (contact.isPresent()) return contact.get().toString();
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
         return "Contato não encontrado!";
@@ -30,13 +30,13 @@ public class ContactApi {
 
     @GetMapping("/contacts/name/{name}")
     @ResponseBody
-    public String searchByName(@PathVariable(value = "name") String name){
-        try{
-            List<ContactEntity> contactList = contactRepository.findByName(name);
-            if(contactList.size() > 1)
+    public String searchByName(@PathVariable(value = "name") String name) {
+        try {
+            List<ContactEntity> contactList = contactRepository.findByPersonNameContaining(name);
+            if (contactList.size() > 1)
                 return treatMultipleResults(contactList);
             return contactList.get(0).toString();
-        } catch (Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
         return "Contato não encontrado!";
@@ -44,19 +44,19 @@ public class ContactApi {
 
     @PostMapping("/contacts/delete/{id}")
     @ResponseBody
-    public String deleteById(@PathVariable(value = "id") Integer id){
+    public String deleteById(@PathVariable(value = "id") Integer id) {
         try {
             contactRepository.deleteById(id);
             return "Contact " + id + " removed!";
-        }catch (EmptyResultDataAccessException emptyResult){
+        } catch (EmptyResultDataAccessException emptyResult) {
             return "Usuario de id " + id + " não encontrado!";
-        }catch (Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
             return "Erro: " + ex.getMessage();
         }
     }
 
-    private String treatMultipleResults(List<ContactEntity> contactList){
+    private String treatMultipleResults(List<ContactEntity> contactList) {
         StringBuilder stringBuilder = new StringBuilder()
                 .append(contactList.size()).append(" resultados encontrados!\n");
         contactList.forEach(contact -> stringBuilder.append(contact.toString()).append("\n\n"));
