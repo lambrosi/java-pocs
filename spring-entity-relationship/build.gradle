@@ -1,0 +1,21 @@
+group 'com.lucasambrosi.app'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+ext{
+    springVersion = "2.0.0.RELEASE"
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: springVersion
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: springVersion
+    compile group: 'mysql', name: 'mysql-connector-java', version: '6.0.6'
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
