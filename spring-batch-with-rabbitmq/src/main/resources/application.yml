@@ -1,0 +1,22 @@
+spring:
+  main:
+    allow-bean-definition-overriding: true
+    banner-mode: "off"
+  application:
+    name: app
+    batch.job.enabled: false
+
+
+rabbitmq:
+  host: localhost
+  port: 5672
+  vhost: /
+  user: guest
+  password: guest
+  queue: test-queue
+
+datasource:
+  driver: com.mysql.cj.jdbc.Driver
+  url: jdbc:mysql://localhost:3306/agenda?useTimezone=true&serverTimezone=UTC
+  user: admin
+  password: 1234
