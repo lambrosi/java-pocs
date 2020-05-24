@@ -1,40 +1,48 @@
 package com.lucasambrosi.demo.application.controller;
 
-import com.lucasambrosi.demo.application.counter.MonthCounter;
-import com.lucasambrosi.demo.application.exception.ValueNotAllowedException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.lucasambrosi.demo.application.exception.TaxIdNotAllowedException;
+import com.lucasambrosi.demo.application.service.MicrometerMetricService;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
-
-import java.time.Month;
 
 @RestController
 @RequestMapping
 public class AppController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AppController.class);
-    private MonthCounter monthCounter = new MonthCounter();
+    private final MicrometerMetricService micrometerMetricService;
 
-    @PostMapping("/{month}")
-    public Mono<ResultComputation> compute(@PathVariable Month month,
-                                           @RequestParam Long value) {
-        return validateValue(value)
-                .map(newValue -> monthCounter.increaseCounter(month, newValue))
-                .map(currentCounter -> new ResultComputation(month, currentCounter));
+    public AppController(MicrometerMetricService micrometerMetricService) {
+        this.micrometerMetricService = micrometerMetricService;
     }
 
-    private Mono<Long> validateValue(final Long value) {
-        return Mono.just(value)
-                .filterWhen(this::isEven)
-                .switchIfEmpty(Mono.error(ValueNotAllowedException::new));
+    @PostMapping("/user")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Mono<User> create(@RequestParam String name,
+                             @RequestParam String taxId) {
+        return validateTaxId(taxId)
+                .flatMap(it -> this.save(name, it))
+                .doOnNext(micrometerMetricService::incrementUserSuccess)
+                .doOnError(micrometerMetricService::incrementUserError);
     }
 
-    private Mono<Boolean> isEven(final Long value) {
-        return Mono.just(value % 2 == 0);
+    private Mono<String> validateTaxId(final String taxId) {
+        return Mono.just(taxId)
+                .filterWhen(this::isValid)
+                .switchIfEmpty(Mono.error(TaxIdNotAllowedException::new));
+    }
+
+    private Mono<Boolean> isValid(final String taxId) {
+        //Perform API call to validate taxId in some bureau
+        return Mono.just(!taxId.endsWith("7"));
+    }
+
+    private Mono<User> save(final String name, final String taxId) {
+        return Mono.just(new User(name, taxId));
     }
 }
