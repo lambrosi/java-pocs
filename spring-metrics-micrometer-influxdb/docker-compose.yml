@@ -5,10 +5,16 @@ services:
   application:
     build: .
     ports: ['8080:8080']
-    links :
+    links:
       - influxdb:influxdb
     depends_on: ['influxdb']
 
   influxdb:
     image: influxdb:latest
     ports: ['8086:8086']
+
+  grafana:
+    image: grafana/grafana:latest
+    ports: ['3000:3000']
+    links:
+      - influxdb:influxdb
