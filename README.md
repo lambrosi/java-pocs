@@ -9,3 +9,5 @@
 * [spring-entity-repository](https://github.com/lambrosi/java-pocs/tree/master/spring-entity-repository) - Using Spring Data JPA query methods
 
 * [spring-kafka](https://github.com/lambrosi/java-pocs/tree/master/spring-entity-repository) - Using Spring Kafka to produce messages for given topic
+
+* [spring-metrics-micrometer-influxdb](https://github.com/lambrosi/java-pocs/tree/master/spring-metrics-micrometer-influxdb) - Using Micrometer and InfluxDB to monitor metrics of an Spring application
